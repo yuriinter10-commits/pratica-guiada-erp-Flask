@@ -1,3 +1,6 @@
+from app.models.produto import Produto
+from app.models.usuario import Usuario
+from app.models.categoria import Categoria
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from app.controllers import (produtos_controller, categoria_controller, usuarios_controller)
@@ -157,3 +160,20 @@ def excluir_usuario_view(id):
     flash(msg, "success" if sucesso else "danger")
 
     return redirect(url_for("web.listar_usuarios_view"))
+
+web_bp = Blueprint('web', __name__, template_folder='templates')
+
+@web_bp.route('/dashboard')
+def dashboard():
+    # Buscando a contagem total diretamente do banco de dados
+    total_produtos = Produto.query.count()
+    total_categorias = Categoria.query.count()
+    total_usuarios = Usuario.query.count()
+    
+    # Passando os dados para o template HTML
+    return render_template(
+        'dashboard.html', 
+        total_produtos=total_produtos, 
+        total_categorias=total_categorias, 
+        total_usuarios=total_usuarios
+    )
